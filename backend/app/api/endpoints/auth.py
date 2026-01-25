@@ -1,0 +1,48 @@
+from typing import Any
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from fastapi.security import OAuth2PasswordRequestForm
+from app.db.base_class import Base
+
+from app.api import deps
+from app.core import security
+from app.models.all_models import User
+from app.schemas.user import UserCreate, UserResponse, Token
+
+router = APIRouter()
+
+@router.post("/register", response_model=UserResponse)
+def register(
+    user_in: UserCreate,
+    db: Session = Depends(deps.get_db),
+) -> Any:
+    user = db.query(User).filter(User.email == user_in.email).first()
+    if user:
+        raise HTTPException(
+            status_code=400,
+            detail="The user with this username already exists in the system.",
+        )
+    user = User(
+        email=user_in.email,
+        hashed_password=security.get_password_hash(user_in.password),
+        is_active=True,
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
+@router.post("/login", response_model=Token)
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(deps.get_db),
+) -> Any:
+    user = db.query(User).filter(User.email == form_data.username).first()
+    if not user or not security.verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect email or password")
+    
+    access_token = security.create_access_token(subject=user.id)
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+    }
