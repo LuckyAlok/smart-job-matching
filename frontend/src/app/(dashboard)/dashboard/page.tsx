@@ -5,6 +5,8 @@ import axios from 'axios';
 import { useStore } from '@/store/useStore';
 import JobCard from '@/components/dashboard/JobCard';
 import { useRouter } from 'next/navigation';
+import { config } from '@/config';
+
 
 export default function Dashboard() {
     const [matches, setMatches] = useState<any[]>([]);
@@ -25,7 +27,7 @@ export default function Dashboard() {
             try {
                 setLoading(true);
                 // 1. Get Job Roles
-                const rolesResp = await axios.get('http://127.0.0.1:8000/job-roles/', {
+                const rolesResp = await axios.get(`${config.API_URL}/job-roles/`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -36,7 +38,7 @@ export default function Dashboard() {
 
                 const results = await Promise.all(roles.map(async (role: any) => {
                     // Get Match Score
-                    const matchResp = await axios.post(`http://127.0.0.1:8000/matches/${role.id}`, {}, {
+                    const matchResp = await axios.post(`${config.API_URL}/matches/${role.id}`, {}, {
                         headers: { Authorization: `Bearer ${token}` }
                     });
 
@@ -45,7 +47,7 @@ export default function Dashboard() {
                     let courses: any[] = [];
 
                     if (missing.length > 0) {
-                        const recResp = await axios.get(`http://127.0.0.1:8000/courses/recommendations?skills=${missing.join(',')}`, {
+                        const recResp = await axios.get(`${config.API_URL}/courses/recommendations?skills=${missing.join(',')}`, {
                             headers: { Authorization: `Bearer ${token}` }
                         });
                         // Flatten the grouped structure for simplicity

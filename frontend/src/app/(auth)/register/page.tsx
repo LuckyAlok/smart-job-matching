@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import Link from 'next/link';
+import { config } from '@/config';
+
 
 export default function RegisterPage() {
     const [email, setEmail] = useState('');
@@ -13,7 +15,7 @@ export default function RegisterPage() {
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await axios.post('http://127.0.0.1:8000/auth/register', {
+            await axios.post(`${config.API_URL}/auth/register`, {
                 email,
                 password
             });

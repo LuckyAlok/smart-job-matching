@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { useStore } from '@/store/useStore';
 import Link from 'next/link';
+import { config } from '@/config';
+
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -19,7 +21,7 @@ export default function LoginPage() {
             formData.append('username', email);
             formData.append('password', password);
 
-            const response = await axios.post('http://127.0.0.1:8000/auth/login', formData, {
+            const response = await axios.post(`${config.API_URL}/auth/login`, formData, {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }

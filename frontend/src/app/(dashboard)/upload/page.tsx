@@ -6,6 +6,8 @@ import axios from 'axios';
 import { useStore } from '@/store/useStore';
 import Dropzone from '@/components/upload/Dropzone';
 import { FileText, CheckCircle2 } from 'lucide-react';
+import { config } from '@/config';
+
 
 export default function UploadPage() {
     const [isUploading, setIsUploading] = useState(false);
@@ -29,7 +31,7 @@ export default function UploadPage() {
 
         try {
             // 1. Upload Resume
-            const response = await axios.post('http://127.0.0.1:8000/resume/upload', formData, {
+            const response = await axios.post(`${config.API_URL}/resume/upload`, formData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
