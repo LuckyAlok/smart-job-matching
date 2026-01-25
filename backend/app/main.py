@@ -23,6 +23,7 @@ app.add_middleware(
 app.include_router(api_router)
 
 @app.get("/")
+def root():
     return {"message": "Welcome to Smart Job Matching API"}
 
 from sqlalchemy.orm import Session
