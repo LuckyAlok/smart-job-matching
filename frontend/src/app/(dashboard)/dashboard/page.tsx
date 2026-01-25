@@ -37,31 +37,38 @@ export default function Dashboard() {
                 const roles = rolesResp.data.slice(0, 5);
 
                 const results = await Promise.all(roles.map(async (role: any) => {
-                    // Get Match Score
-                    const matchResp = await axios.post(`${config.API_URL}/matches/${role.id}`, {}, {
-                        headers: { Authorization: `Bearer ${token}` }
-                    });
-
-                    // Get Recommendations based on missing skills
-                    const missing = matchResp.data.missing_skills || [];
-                    let courses: any[] = [];
-
-                    if (missing.length > 0) {
-                        const recResp = await axios.get(`${config.API_URL}/courses/recommendations?skills=${missing.join(',')}`, {
+                    try {
+                        // Get Match Score
+                        const matchResp = await axios.post(`${config.API_URL}/matches/${role.id}`, {}, {
                             headers: { Authorization: `Bearer ${token}` }
                         });
-                        // Flatten the grouped structure for simplicity
-                        courses = recResp.data.flatMap((g: any) => g.courses).slice(0, 3);
-                    }
 
-                    return {
-                        role: role.title,
-                        score: matchResp.data.score,
-                        matchedSkills: matchResp.data.matched_skills,
-                        missingSkills: missing,
-                        courses: courses
-                    };
+                        // Get Recommendations based on missing skills
+                        const missing = matchResp.data.missing_skills || [];
+                        let courses: any[] = [];
+
+                        if (missing.length > 0) {
+                            const recResp = await axios.get(`${config.API_URL}/courses/recommendations?skills=${missing.join(',')}`, {
+                                headers: { Authorization: `Bearer ${token}` }
+                            });
+                            // Flatten the grouped structure for simplicity
+                            courses = recResp.data.flatMap((g: any) => g.courses).slice(0, 3);
+                        }
+
+                        return {
+                            role: role.title,
+                            score: matchResp.data.score,
+                            matchedSkills: matchResp.data.matched_skills,
+                            missingSkills: missing,
+                            courses: courses
+                        };
+                    } catch (error) {
+                        console.error(`Error matching role ${role.id}:`, error);
+                        return null;
+                    }
                 }));
+
+                setMatches(results.filter(r => r !== null));
 
                 setMatches(results);
             } catch (err) {
