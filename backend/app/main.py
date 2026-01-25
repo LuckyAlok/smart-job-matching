@@ -23,5 +23,20 @@ app.add_middleware(
 app.include_router(api_router)
 
 @app.get("/")
-def root():
     return {"message": "Welcome to Smart Job Matching API"}
+
+from sqlalchemy.orm import Session
+from fastapi import Depends
+from app.api import deps
+from scripts.seed_db import seed_data
+
+@app.get("/seed")
+def seed_db(db: Session = Depends(deps.get_db)):
+    """
+    WARNING: Use this only for initial setup!
+    """
+    try:
+        seed_data(db)
+        return {"message": "Database seeded successfully"}
+    except Exception as e:
+        return {"error": str(e)}
