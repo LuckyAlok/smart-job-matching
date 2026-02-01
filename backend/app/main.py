@@ -41,3 +41,18 @@ def seed_db(db: Session = Depends(deps.get_db)):
         return {"message": "Database seeded successfully"}
     except Exception as e:
         return {"error": str(e)}
+
+@app.get("/reset-db")
+def reset_db():
+    """
+    WARNING: This will drop ALL data and recreate tables.
+    Use this to fix schema mismatches on Render.
+    """
+    try:
+        from app.db.session import engine
+        from app.db.base import Base
+        Base.metadata.drop_all(bind=engine)
+        Base.metadata.create_all(bind=engine)
+        return {"message": "Database reset successfully. Schema is now up to date."}
+    except Exception as e:
+        return {"error": str(e)}
