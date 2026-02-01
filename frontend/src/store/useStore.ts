@@ -4,6 +4,7 @@ import axios from 'axios';
 interface User {
     id: number;
     email: string;
+    full_name?: string;
 }
 
 interface MatchResult {

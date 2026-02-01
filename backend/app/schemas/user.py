@@ -12,6 +12,7 @@ class TokenData(BaseModel):
 # User
 class UserBase(BaseModel):
     email: EmailStr
+    full_name: Optional[str] = None
 
 class UserCreate(UserBase):
     password: str

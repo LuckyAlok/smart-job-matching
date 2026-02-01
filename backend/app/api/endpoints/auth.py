@@ -24,6 +24,7 @@ def register(
         )
     user = User(
         email=user_in.email,
+        full_name=user_in.full_name,
         hashed_password=security.get_password_hash(user_in.password),
         is_active=True,
     )
