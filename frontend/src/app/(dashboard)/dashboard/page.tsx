@@ -68,9 +68,12 @@ export default function Dashboard() {
                     }
                 }));
 
-                setMatches(results.filter(r => r !== null));
+                const finalMatches = results.filter(r => r !== null);
+                setMatches(finalMatches);
 
-                setMatches(results);
+                if (finalMatches.length === 0) {
+                    console.warn("No matches found. Check if backend has job roles or if matching failed.");
+                }
             } catch (err) {
                 console.error("Failed to load dashboard", err);
             } finally {
